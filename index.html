@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300,100' rel='stylesheet' type='text/css'>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <meta charset="utf-8">
+    <style>
+            .name {
+                font-family: 'Roboto Slab', serif;
+                font-weight: 700;
+                font-size: 60pt;
+                letter-spacing: -2px;
+                }
+            .subtit {
+                font-family: 'Roboto Slab', serif;
+                font-weight: 200;
+                font-size: 25pt;
+                }
+            .underconstruction {
+                font-family: 'Roboto Slab', serif;
+                font-weight: 700;
+                font-size: 18pt;
+                color : "#2e4653";
+                letter-spacing: -2px;
+                }
+    </style>
+</head>
+<body>
+    <script>
+    // Javascript
+
+//
+    var drag = d3.behavior.drag()
+                 .origin(function() {
+                     var t = d3.select(this);
+                     return {x: t.attr("x") + d3.transform(t.attr("transform")).translate[0],
+                             y: t.attr("y") + d3.transform(t.attr("transform")).translate[1]};
+                 })
+                 .on("drag", function(d,i) {
+                     d3.select(this).attr("transform", function(d,i){
+                         return "translate(" + [ d3.event.x,d3.event.y ] + ")"
+                     })
+                 });
+
+    var margin = {top: 20, right: 20, bottom: 20, left: 20},
+        width = 1200 - margin.left - margin.right,
+        height = 800 - margin.top - margin.bottom;
+
+    var circlesdata = [
+        {x : 403.40295, y : 306.24, r : 88.060753, c : "#20202b"},
+        {x : 414.54303, y : 383.08, r : 113.90672, c : "#2e4653"},
+        {x : 319.24698, y : 111.22, r : 40.985046, c : "#baf58e"},
+        {x : 317.08011, y : 173.27, r : 61.188351, c : "#74cb91"},
+        {x : 314.94693, y : 245.9, r : 87.565269, c : "#459e8a"},
+        {x : 311.7247, y : 343.59, r : 111.60302, c : "#347175"}
+    ];
+
+    var headertextdata = [
+        {x : 550, y : 120, class : "name", content : "biotop*"},
+    ];
+
+    var underconstructiondata = [
+        {x : 300.7247, y : 343.59, class : "underconstruction", content : "...under construction"},
+    ];
+
+    var ytext = 165,
+        xtext = 550,
+        duration = 3000;
+        delay = duration / 6;
+
+    var textdata = [
+        {x : xtext, y : ytext, class : "subtit", content : "wissenschaftssalon", delay : 0},
+        {x : xtext, y : ytext+1*40, class : "subtit", content : "forschungsplatform", delay : 1 * delay},
+        {x : xtext, y : ytext+2*40, class : "subtit", content : "hackerspace", delay : 2 * delay},
+        {x : xtext, y : ytext+3*40, class : "subtit", content : "datavisualisation", delay : 3 * delay},
+        {x : xtext, y : ytext+4*40, class : "subtit", content : "magazin", delay : 4 * delay},
+    ];
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // svg.append("g")
+    //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+
+    svg.selectAll(".name")
+        .data(headertextdata)
+      .enter().append("text")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y; })
+        .attr("class", function(d) { return d.class; })
+        .text(function(d) { return d.content; })
+
+    svg.selectAll(".subtit")
+        .data(textdata)
+      .enter().append("text")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y; })
+        .attr("class", function(d) { return d.class; })
+        .text(function(d) { return d.content; })
+        .style("opacity","0")
+      .transition()
+        .duration(duration)
+        .ease("expt")
+        .delay(function(d) { return d.delay; })
+        .each(slide);
+
+    svg.selectAll(".underconstruction")
+        .data(underconstructiondata)
+      .enter().append("text")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y; })
+        .attr("class", function(d) { return d.class; })
+        .text(function(d) { return d.content; })
+
+    var logo = svg.append("g")
+            .attr("class", "logo")
+          .selectAll("circle")
+            .data(circlesdata)
+          .enter().append("circle")
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; })
+            .attr("r", function(d) { return d.r; })
+            .attr("fill", function(d) { return d.c; });
+
+    logo.call(drag)
+
+    function slide() {
+      var subtitle = d3.select(this);
+      (function repeat() {
+        subtitle = subtitle.transition()
+            .style("opacity","1")
+        //   .transition()
+        //     .style("opacity","0")
+            // .each("end", repeat);
+      })();
+    }
+
+
+
+    </script>
+</body>
